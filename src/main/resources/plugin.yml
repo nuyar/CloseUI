@@ -1,0 +1,10 @@
+main: kr.nuyar.www.closeui.CloseUI
+name: CloseUI
+version: '${project.version}'
+description: cancel mod ui
+author: nuYaR
+website: www.nuyar.kr
+
+commands:
+  closeui:
+    description: CloseUI command
