@@ -6,7 +6,7 @@
 
     <groupId>kr.nuyar.www</groupId>
     <artifactId>CloseUI</artifactId>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.3.1-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

@@ -136,6 +136,8 @@ public class CloseUI extends JavaPlugin implements Listener {
             return;
 
         InventoryView inv = p.getOpenInventory();
+        if (inv.getType() == InventoryType.CREATIVE)
+            return;
         if (this.whitelist.contains(ChatColor.stripColor(inv.getTitle())))
             return;
 
@@ -165,6 +167,8 @@ public class CloseUI extends JavaPlugin implements Listener {
             return;
 
         InventoryView inv = p.getOpenInventory();
+        if (inv.getType() == InventoryType.CREATIVE)
+            return;
         if (this.whitelist.contains(ChatColor.stripColor(inv.getTitle())))
             return;
 
