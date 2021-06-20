@@ -1,5 +1,5 @@
 main: kr.nuyar.www.closeui.CloseUI
-name: CloseUI
+name: ${project.artifactId}
 version: '${project.version}'
 description: cancel mod ui
 author: nuYaR

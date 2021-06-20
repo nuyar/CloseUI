@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -28,6 +29,7 @@ public class CloseUI extends JavaPlugin implements Listener {
 
     private Inventory closingInventory;
     private Map<String, Boolean> setting;
+    List<String> whitelist;
 
     @Override
     public void onEnable() {
@@ -35,6 +37,11 @@ public class CloseUI extends JavaPlugin implements Listener {
 
         this.closingInventory = Bukkit.createInventory(null, 9, ChatColor.RED + "이 블럭/엔티티를 우클릭하지 말아주세요.");
         this.setting = new HashMap<>();
+
+        this.getConfig().addDefault("whitelist", new ArrayList<String>());
+        this.whitelist = this.getConfig().getStringList("whitelist");
+        this.saveConfig();
+
 
         this.getCommand("closeui").setExecutor(this);
         this.getServer().getPluginManager().registerEvents(this, this);
@@ -45,7 +52,6 @@ public class CloseUI extends JavaPlugin implements Listener {
         Player p = e.getPlayer();
         if (!(this.setting.containsKey(p.getName()) && this.setting.get(p.getName())))
             return;
-        this.setting.remove(p.getName());
         e.setCancelled(true);
 
         String entity = e.getRightClicked().getUniqueId().toString();
@@ -76,7 +82,6 @@ public class CloseUI extends JavaPlugin implements Listener {
         Player p = e.getPlayer();
         if (!(this.setting.containsKey(p.getName()) && this.setting.get(p.getName())))
             return;
-        this.setting.remove(p.getName());
         e.setCancelled(true);
 
         Block block = e.getClickedBlock();
@@ -106,8 +111,11 @@ public class CloseUI extends JavaPlugin implements Listener {
         this.saveConfig();
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onClickBlock(PlayerInteractEvent e) {
+        if(e.getAction() != Action.RIGHT_CLICK_BLOCK)
+            return;
+
         Player p = e.getPlayer();
         Block block = e.getClickedBlock();
 
@@ -128,15 +136,18 @@ public class CloseUI extends JavaPlugin implements Listener {
             return;
 
         InventoryView inv = p.getOpenInventory();
-        if (!inv.getType().equals(InventoryType.CRAFTING))
+        if (this.whitelist.contains(ChatColor.stripColor(inv.getTitle())))
             return;
 
         p.openInventory(closingInventory);
         p.closeInventory();
-        //this.getServer().getScheduler().scheduleSyncDelayedTask(this, () -> player.closeInventory(), 1);
+        this.getServer().getScheduler().scheduleSyncDelayedTask(this, () -> {
+            p.openInventory(closingInventory);
+            p.closeInventory();
+        }, 1);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onClickEntity(PlayerInteractAtEntityEvent e) {
         Player p = e.getPlayer();
         String entity = e.getRightClicked().getUniqueId().toString();
@@ -154,12 +165,15 @@ public class CloseUI extends JavaPlugin implements Listener {
             return;
 
         InventoryView inv = p.getOpenInventory();
-        if (!inv.getType().equals(InventoryType.CRAFTING))
+        if (this.whitelist.contains(ChatColor.stripColor(inv.getTitle())))
             return;
 
         p.openInventory(closingInventory);
         p.closeInventory();
-        //this.getServer().getScheduler().scheduleSyncDelayedTask(this, () -> player.closeInventory(), 1);
+        this.getServer().getScheduler().scheduleSyncDelayedTask(this, () -> {
+            p.openInventory(closingInventory);
+            p.closeInventory();
+        }, 1);
     }
 
     @Override
